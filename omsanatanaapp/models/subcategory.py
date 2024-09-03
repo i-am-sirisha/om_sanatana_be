@@ -3,8 +3,6 @@ from .category import Category
 from django.db import models
 
 
-
-
 class SubCategory(models.Model):
 
     _id = models.CharField(db_column='_id', primary_key=True, max_length=45, default=uuid.uuid1, unique=True, editable=False)

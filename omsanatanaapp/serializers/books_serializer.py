@@ -26,28 +26,6 @@ from rest_framework import serializers
 from ..models import Book, PDF
 import os,base64
 
-# class PDFSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = PDF
-#         fields = ['_id', 'name', 'file_path']
-
-# class BookSerializer(serializers.ModelSerializer):
-#     pdf_files = PDFSerializer(many=True, read_only=True)
-
-#     class Meta:
-#         model = Book
-#         fields = '__all__'
-
-class BookSerializer1(serializers.ModelSerializer):
-    pdf_files = serializers.SerializerMethodField()
-
-    def get_pdf_files(self, instance):
-        return PDFSerializer(instance.pdf_files.all(), many=True).data
-
-    class Meta:
-        model = Book
-        fields = "__all__"
-
 
 class PDFSerializer(serializers.ModelSerializer):
     class Meta:
@@ -73,6 +51,7 @@ class PDFSerializer1(serializers.ModelSerializer):
         except Exception as e:
             return str(e)
 
+
 class BookSerializer(serializers.ModelSerializer):
     pdf_files = PDFSerializer(many=True, read_only=True)  # Include related PDFs
 
@@ -80,9 +59,22 @@ class BookSerializer(serializers.ModelSerializer):
         model = Book
         fields = ['_id', 'name', 'category_id', 'news_sub_category_id', 'pdf_files']
 
+class BookSerializer1(serializers.ModelSerializer):
+    pdf_files = serializers.SerializerMethodField()
+
+    def get_pdf_files(self, instance):
+        return PDFSerializer(instance.pdf_files.all(), many=True).data
+
+    class Meta:
+        model = Book
+        fields = "__all__"
+
+
 class BookSerializer2(serializers.ModelSerializer):
     pdf_files = PDFSerializer1(many=True, read_only=True)  # Include related PDFs
 
     class Meta:
         model = Book
         fields = ['_id', 'name', 'category_id', 'news_sub_category_id', 'pdf_files']
+
+
