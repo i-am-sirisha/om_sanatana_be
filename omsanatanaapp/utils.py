@@ -31,28 +31,36 @@ def save_image_to_folder(pdf, _id,name):
         image_file.write(image_data)
     return image_path
 
-import os
+
+import fitz  # PyMuPDF
 import base64
 from django.conf import settings
+import os
+
+def extract_pdf_content(file_path):
+    if os.path.exists(file_path):
+        pdf_document = fitz.open(file_path)
+        content = {"text": "", "images": []}
+
+        for page_number in range(len(pdf_document)):
+            page = pdf_document.load_page(page_number)
+            content["text"] += page.get_text()
+
+            # Extract images
+            image_list = page.get_images(full=True)
+            for img_index, img in enumerate(image_list):
+                xref = img[0]
+                base_image = pdf_document.extract_image(xref)
+                image_bytes = base_image["image"]
+                image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+                content["images"].append(image_base64)
+
+        pdf_document.close()
+        return content
+    else:
+        return {"text": "", "images": []}
 
 
-def save_base64_to_folder(pdf_base64, _id, name):
-    folder_name = str(_id)
-    img_url = settings.FILE_URL
-    folder_path = os.path.join(img_url, "om_sanathana", folder_name)
-    
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-    
-    pdf_name = name
-    pdf_path = os.path.join(folder_path, pdf_name)
-    
-    pdf_data = base64.b64decode(pdf_base64)
-    
-    with open(pdf_path, "wb") as pdf_file:
-        pdf_file.write(pdf_data)
-    
-    return pdf_path
 
 # from django.conf import settings
 # import os

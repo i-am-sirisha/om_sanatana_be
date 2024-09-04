@@ -1,3 +1,3 @@
 from .category_serializer import CategorySerializer
 from .subcategory_serializer import SubCategorySerializer
-from .books_serializer import BookSerializer,BookSerializer1,PDFSerializer,PDFSerializer1,BookSerializer2
+from .books_serializer import BookSerializer,BookSerializer1
