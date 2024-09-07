@@ -69,49 +69,85 @@ class BookUpdateCall(generics.GenericAPIView):
         return Response(BookSerializer(serializer.instance).data, status=status.HTTP_200_OK)
     
 
+# class book_GetItemByfield_InputView(APIView):
+#     serializer_class = BookSerializer1
+
+#     def get(self, request, input_value, field_name):
+#         try:
+#             # Get all field names of the NewsCategory model
+#             field_names = [field.name for field in book._meta.get_fields()]
+#             print(field_names, "Available field names")
+
+#             # Check if the field_name provided is valid
+#             if field_name in field_names:
+#                 filter_kwargs = {field_name: input_value}
+#                 print(filter_kwargs, "Filter arguments")
+
+#                 # Filter the queryset based on the dynamic field name and value
+#                 queryset = book.objects.filter(**filter_kwargs)
+#                 print(queryset,"ghtyguyguiyg")
+
+#                 # # Process the data based on the 'status' field
+#                 # if field_name != 'status':
+#                 #     queryset = queryset.filter(status=EntityStatus.SUCCESS.value)
+
+#                 # Apply pagination to the filtered queryset
+#                 paginator = CustomPagination()
+#                 paginated_queryset = paginator.paginate_queryset(queryset, request)
+                
+#                 # Serialize the paginated queryset
+#                 serialized_data = BookSerializer1(paginated_queryset, many=True)
+                
+#                 return paginator.get_paginated_response(serialized_data.data)
+
+#             else:
+#                 return Response({
+#                     'message': 'Invalid field name',
+#                     'status': 400
+#                 }, status=status.HTTP_400_BAD_REQUEST)
+
+#         except book.DoesNotExist:
+#             return Response({
+#                 'message': 'Object not found',
+#                 'status': 404
+#             }, status=status.HTTP_404_NOT_FOUND)
+
+
+
 class book_GetItemByfield_InputView(APIView):
     serializer_class = BookSerializer1
+    pagination_class = CustomPagination
 
-    def get(self, request, input_value, field_name):
-        try:
-            # Get all field names of the NewsCategory model
-            field_names = [field.name for field in book._meta.get_fields()]
-            print(field_names, "Available field names")
+    def get(self, request, *args, **kwargs):
+        queryset = book.objects.all()
 
-            # Check if the field_name provided is valid
-            if field_name in field_names:
-                filter_kwargs = {field_name: input_value}
-                print(filter_kwargs, "Filter arguments")
+        category_id = request.query_params.get('category_id')
+        news_sub_category_id = request.query_params.get('news_sub_category_id')
+        _id = request.query_params.get('_id')
+        name = request.query_params.get('name')
+        
 
-                # Filter the queryset based on the dynamic field name and value
-                queryset = book.objects.filter(**filter_kwargs)
-                print(queryset,"ghtyguyguiyg")
+        # Filter by category_id if provided
+        if _id:
+            queryset = queryset.filter(_id=_id)
 
-                # # Process the data based on the 'status' field
-                # if field_name != 'status':
-                #     queryset = queryset.filter(status=EntityStatus.SUCCESS.value)
+        if name:
+            queryset = queryset.filter(name=name)
 
-                # Apply pagination to the filtered queryset
-                paginator = CustomPagination()
-                paginated_queryset = paginator.paginate_queryset(queryset, request)
-                
-                # Serialize the paginated queryset
-                serialized_data = BookSerializer1(paginated_queryset, many=True)
-                
-                return paginator.get_paginated_response(serialized_data.data)
+        # Filter by category_id if provided
+        if category_id:
+            queryset = queryset.filter(category_id=category_id)
 
-            else:
-                return Response({
-                    'message': 'Invalid field name',
-                    'status': 400
-                }, status=status.HTTP_400_BAD_REQUEST)
+        # Filter by news_sub_category_id if provided
+        if news_sub_category_id:
+            queryset = queryset.filter(news_sub_category_id=news_sub_category_id)
 
-        except book.DoesNotExist:
-            return Response({
-                'message': 'Object not found',
-                'status': 404
-            }, status=status.HTTP_404_NOT_FOUND)
 
+        # Pagination
+        paginator = CustomPagination()
+        paginated_queryset = paginator.paginate_queryset(queryset, request)
+        serializer = BookSerializer1(paginated_queryset, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
 # class BookPostCall(generics.GenericAPIView):
 #     serializer_class = BookSerializer

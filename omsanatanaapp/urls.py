@@ -17,7 +17,8 @@ urlpatterns = [
     path('BookPostCall/', BookPostCall.as_view(), name='BookPostCall'),
     path('category_get_by_field/<str:field_name>/<str:input_value>/', Category_GetItemByfield_InputView.as_view(), name='get_category_by_field'),
     path('sub_category_by_id/<str:_id>/', GetSubCategoryById_InputView.as_view(), name="sub_category_by_id"),
-    path('book_GetItemByfield_InputView/<str:field_name>/<str:input_value>/', book_GetItemByfield_InputView.as_view()),
+    # path('book_GetItemByfield_InputView/<str:field_name>/<str:input_value>/', book_GetItemByfield_InputView.as_view()),
+    path('book_GetItemByfield_InputView/', book_GetItemByfield_InputView.as_view(), name='getitembyfield'),
 
 
 
