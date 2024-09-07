@@ -23,7 +23,7 @@ class BookPostCall(generics.GenericAPIView):
     # permission_classes = [permissions.IsAuthenticated]
     def post(self, request, *args, **kwargs):
         pdf_location = request.data.get('pdf_location')
-        print(pdf_location, "vfvfv")
+        # print(pdf_location, "vfvfv")
         # Make a mutable copy of request.data
         mutable_data = request.data.copy()
         mutable_data['pdf_location'] = "null"
@@ -50,7 +50,7 @@ class BookUpdateCall(generics.GenericAPIView):
         instance = get_object_or_404(book, _id=_id)
         # Retrieve image_location from request data
         pdf_location = request.data.get('pdf_location')
-        print(pdf_location, "vfvfv")
+        # print(pdf_location, "vfvfv")
         # Make a mutable copy of request.data and set image_location to "null"
         mutable_data = request.data.copy()
         mutable_data['pdf_location'] = "null"

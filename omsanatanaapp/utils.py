@@ -32,33 +32,54 @@ def save_image_to_folder(pdf, _id,name):
     return image_path
 
 
+
+
+##########################perfect
+
 import fitz  # PyMuPDF
 import base64
-from django.conf import settings
 import os
 
 def extract_pdf_content(file_path):
+    content = []  # To store the structured text and images
+    text_counter = 1
+    image_counter = 1
+    
     if os.path.exists(file_path):
         pdf_document = fitz.open(file_path)
-        content = {"text": "", "images": []}
-
+        
         for page_number in range(len(pdf_document)):
             page = pdf_document.load_page(page_number)
-            content["text"] += page.get_text()
+
+            # Extract text
+            blocks = page.get_text("dict")["blocks"]
+            for block in blocks:
+                if "lines" in block:
+                    block_text = ""
+                    for line in block["lines"]:
+                        for span in line["spans"]:
+                            block_text += span["text"] + " "
+                    
+                    if block_text.strip():
+                        content.append(f"text{text_counter}: {block_text.strip()}")
+                        text_counter += 1
 
             # Extract images
-            image_list = page.get_images(full=True)
-            for img_index, img in enumerate(image_list):
+            images = page.get_images(full=True)
+            for img_index, img in enumerate(images):
                 xref = img[0]
                 base_image = pdf_document.extract_image(xref)
-                image_bytes = base_image["image"]
-                image_base64 = base64.b64encode(image_bytes).decode("utf-8")
-                content["images"].append(image_base64)
+                if base_image:
+                    image_bytes = base_image["image"]
+                    image_base64 = base64.b64encode(image_bytes).decode("utf-8")
 
+                    # Append image data as image1, image2, etc.
+                    content.append(f"image{image_counter}: {image_base64}")
+                    image_counter += 1
+        
         pdf_document.close()
-        return content
-    else:
-        return {"text": "", "images": []}
+    
+    return content
 
 
 
